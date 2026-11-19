@@ -36,7 +36,8 @@ WebSocket connections take a different route. They go `Endpoint` → `socket "/s
 
 Phoenix uses **esbuild** (bundling JS) and **Tailwind** (CSS), downloaded as standalone binaries,
 so no `npm install` is needed for the basics. `assets/js/app.js` is the entry point. Anything you
-`import` from it ends up in `priv/static/assets/app.js`.
+`import` from it ends up in `priv/static/assets/js/app.js` (see the `esbuild` config in
+`config/config.exs`).
 
 ## Steps
 

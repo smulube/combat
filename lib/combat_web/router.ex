@@ -18,6 +18,7 @@ defmodule CombatWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/play/:match_id", GameController, :show
   end
 
   # Other scopes may use custom stacks.
