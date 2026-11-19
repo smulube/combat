@@ -46,7 +46,7 @@ want to override this rule for that specific case.
   **Stretch goals**, then a link to the next guide. Exceptions: `00-overview.md` is reference
   material, and `13-netcode-and-polish.md` splits its steps into lettered parts (Part A, B, …).
   Follow whichever shape the guide you're editing already uses.
-- Steps describe *what* to build (module names, function signatures, behaviour), not full
+- Steps describe _what_ to build (module names, function signatures, behaviour), not full
   implementations.
 - The guides assume Phoenix 1.8 with no Ecto, mailer or gettext, and with LiveDashboard
   enabled in development.
