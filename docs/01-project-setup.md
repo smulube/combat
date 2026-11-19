@@ -55,14 +55,19 @@ mix help phx.new | head -5   # confirm the version
 This directory already contains `README.md` and `docs/`. From **inside** it, run:
 
 ```sh
-mix phx.new . --app combat --no-ecto --no-mailer --no-dashboard --no-gettext
+mix phx.new . --app combat --no-ecto --no-mailer --no-gettext
 ```
 
 What the flags remove, and why:
 
 - `--no-ecto`: there's no database. Matches live in memory and vanish when they end.
-- `--no-mailer`, `--no-dashboard`, `--no-gettext`: less generated code to read. You can add
-  LiveDashboard later (it's lovely for watching processes) as a stretch goal.
+- `--no-mailer`, `--no-gettext`: less generated code to read. Neither is needed for a game.
+
+We **keep** LiveDashboard (no `--no-dashboard`). It's a browser view of the running BEAM:
+processes, supervision trees, memory and telemetry metrics. You'll use it in guide 06 to watch
+match processes start, crash and restart, and it can chart any telemetry metrics you add (such
+as the tick timing suggested in guide 05's stretch goals). It costs one
+dependency and a few lines in `router.ex`, and it's only mounted in development.
 
 If it asks whether to overwrite `README.md`, answer **no**. Say **yes** to fetching dependencies.
 
@@ -74,7 +79,11 @@ Before writing anything, open and read these files. Note in a scratch file what 
 - `lib/combat/application.ex`: **the root supervisor's child list.** You'll come back here
   in guides 06 and 09.
 - `lib/combat_web/endpoint.ex`: the plug pipeline. Find the `socket "/live", ...` line.
-- `lib/combat_web/router.ex`: pipelines and routes.
+- `lib/combat_web/router.ex`: pipelines and routes. Near the bottom, find the
+  `if Application.compile_env(:combat, :dev_routes)` block that mounts `live_dashboard`. Why is
+  it wrapped in that `if`?
+- `lib/combat_web/telemetry.ex`: the metrics LiveDashboard charts. You'll add your own here
+  later.
 - `lib/combat_web/controllers/page_controller.ex` and `page_html/home.html.heex`.
 - `lib/combat_web/components/layouts.ex` (and the `layouts/` folder): the page chrome.
 - `assets/js/app.js`: note that it sets up a LiveView socket. We won't use LiveView for the game,
@@ -141,9 +150,11 @@ blurrier at low resolution. If that bothers you later, switch to a bigger buffer
 - http://localhost:4000/play/abcd shows heading "ABCD" and a black box with a small coloured,
   visibly pixelated square in the corner.
 - The browser console has no errors.
-- Bonus: run `:observer.start()` in `iex -S mix phx.server` and look at the *Applications* tab
-  to find `Combat.Supervisor` and its children. (If observer isn't available in your OTP build,
-  `Supervisor.which_children(Combat.Supervisor)` does the same job in text.)
+- http://localhost:4000/dev/dashboard loads LiveDashboard.
+- Bonus: in the dashboard, open the *Applications* tab and find `Combat.Supervisor` and its
+  children. (`:observer.start()` in `iex -S mix phx.server` shows the same thing in a desktop
+  window if your OTP build has it, and `Supervisor.which_children(Combat.Supervisor)` does it
+  in text.)
 
 ## Stretch goals
 

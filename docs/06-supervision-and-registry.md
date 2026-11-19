@@ -168,8 +168,10 @@ idea: write the state to ETS every N ticks and reload it in `init`.)
 
 ## Stretch goals
 
-- Add `{Phoenix.LiveDashboard, ...}` back (`mix phx.new` left it out) and watch matches appear
-  in its *Processes* tab.
+- Open LiveDashboard (http://localhost:4000/dev/dashboard) next to your iex shell. Start a few
+  matches, then find them in the *Processes* tab (sort by name, or look under
+  `Combat.MatchSupervisor` in the *Applications* tab's tree). Kill one from iex and watch a
+  replacement appear with a new pid.
 - Put the registry value to use: register with `Registry.register/3`-style metadata such as the
   mode and creation time, so `list_ids/0` can become a lobby listing.
 
