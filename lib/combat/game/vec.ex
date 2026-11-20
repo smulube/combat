@@ -6,6 +6,9 @@ defmodule Combat.Game.Vec do
   point down.
   """
 
+  @typedoc """
+  A 2d vector.
+  """
   @type t :: {float(), float()}
 
   @unit_vectors (for n <- 0..15 do
