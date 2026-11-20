@@ -9,10 +9,18 @@ defmodule Combat.Game.Vec do
   @typedoc """
   A 2d vector.
   """
-  @type t :: {float(), float()}
+  @type t() :: {float(), float()}
+
+  @typedoc """
+  One of 16 compass directions (0..15), in steps of 22.5°, where 0 is due east
+  (right), proceeding clockwise (so 4 is due south, 8 is due west, etc.)
+  """
+  @type dir() :: 0..15
+
+  @directions 16
 
   @unit_vectors (for n <- 0..15 do
-                   angle = n * 2 * :math.pi() / 16
+                   angle = n * 2 * :math.pi() / @directions
                    {:math.cos(angle), :math.sin(angle)}
                  end)
                 |> List.to_tuple()
@@ -79,7 +87,7 @@ defmodule Combat.Game.Vec do
       iex> Combat.Game.Vec.from_dir(0)
       {1.0, 0.0}
   """
-  @spec from_dir(0..15) :: t()
+  @spec from_dir(dir()) :: t()
   def from_dir(dir), do: elem(@unit_vectors, dir)
 
   @doc """
@@ -105,6 +113,6 @@ defmodule Combat.Game.Vec do
       iex> Combat.Game.Vec.rotate_dir(4, 18)
       6
   """
-  @spec rotate_dir(0..15, integer()) :: 0..15
-  def rotate_dir(dir, delta), do: Integer.mod(dir + delta, 16)
+  @spec rotate_dir(dir(), integer()) :: dir()
+  def rotate_dir(dir, delta), do: Integer.mod(dir + delta, @directions)
 end
