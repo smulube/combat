@@ -10,10 +10,10 @@ defmodule Combat.Game.Arena do
   defstruct [:width, :height, :walls, :spawns]
 
   @typedoc """
-  Defines a wall as a solid rectangle defined as the top left corner, width and
-  height.
+  Defines a rect type that is a solid rectangle defined as the top left corner,
+  width and height.
   """
-  @type wall() :: %{x: number(), y: number(), w: number(), h: number()}
+  @type rect() :: %{x: number(), y: number(), w: number(), h: number()}
 
   @typedoc """
   Defines the spawn point for one of the players defined as the vehicle's
@@ -27,7 +27,7 @@ defmodule Combat.Game.Arena do
   @type t() :: %__MODULE__{
           width: number(),
           height: number(),
-          walls: [wall()],
+          walls: [rect()],
           spawns: %{p1: spawn(), p2: spawn()}
         }
 end
