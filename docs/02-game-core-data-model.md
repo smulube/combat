@@ -71,6 +71,27 @@ but it's a good habit for fixed-size lookup tables.
 Add `@doc` examples and enable **doctests** (`doctest Combat.Game.Vec` in the test module). For
 example, `from_dir(0)` returns `{1.0, 0.0}`.
 
+<details><summary>Hint: doctests and floating-point results</summary>
+
+A doctest passes only if the result matches the expected value exactly, so tiny float errors
+count as failures. `cos` and `sin` are rarely exact: `from_dir(4)` returns something like
+`{6.123233995736766e-17, 1.0}`, not `{0.0, 1.0}`. Pick doctest examples whose results come out
+exactly, such as `from_dir(0)`, `add/2`, `scale/2` or `length({3.0, 4.0})` → `5.0`. Check
+other directions in ordinary tests with `assert_in_delta/3` (see step 8).
+</details>
+
+Don't wait until step 8 to run them. Create `test/combat/game/vec_test.exs` now (test files
+mirror their `lib/` path), with just the module, `use ExUnit.Case, async: true` and the
+`doctest Combat.Game.Vec` line, then run:
+
+```sh
+mix test test/combat/game/vec_test.exs
+```
+
+The summary should count your doctests. If it says `0 doctests`, check that your examples start
+with `iex>` and that the `doctest` line names the right module. You'll add regular tests to
+this file in step 8.
+
 ### 2. `Combat.Game.Input` (`lib/combat/game/input.ex`)
 
 What one player is currently holding down:
@@ -167,8 +188,9 @@ shell thin and the rules in one place.
 
 ### 8. Tests
 
-Create `test/combat/game/vec_test.exs`, `input_test.exs` and `test/combat/game_test.exs`. Here's
-one complete example to show the shape. Write the rest yourself.
+You created `test/combat/game/vec_test.exs` in step 1. Now create `input_test.exs` next to it, and
+`test/combat/game_test.exs`. Here's `vec_test.exs` with a regular test added, to show the
+shape. Write the rest yourself.
 
 ```elixir
 defmodule Combat.Game.VecTest do
