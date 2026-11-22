@@ -21,6 +21,11 @@ defmodule Combat.Game.State do
   ]
 
   @typedoc """
+  The two possible slots (representing the players) that a game may have.
+  """
+  @type slot() :: :p1 | :p2
+
+  @typedoc """
   Represents the current game state.
   """
   @type t() :: %__MODULE__{
@@ -31,7 +36,7 @@ defmodule Combat.Game.State do
           scores: %{p1: non_neg_integer(), p2: non_neg_integer()},
           time_left: float(),
           status: :waiting | :playing | :over,
-          winner: :p1 | :p2 | :draw | nil,
+          winner: slot() | :draw | nil,
           next_id: pos_integer()
         }
 end

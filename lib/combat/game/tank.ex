@@ -4,7 +4,7 @@ defmodule Combat.Game.Tank do
   controlled by the player when playing the game.
   """
 
-  alias Combat.Game.{Tank, Vec, Arena}
+  alias Combat.Game.{Tank, Vec, Arena, State}
 
   @enforce_keys [:id, :pos]
   defstruct [:id, :pos, dir: 0, turn_cooldown: 0.0, reload: 0.0, spin: 0.0]
@@ -22,7 +22,7 @@ defmodule Combat.Game.Tank do
   vehicle).
   """
   @type t() :: %__MODULE__{
-          id: :p1 | :p2,
+          id: State.slot(),
           pos: Vec.t(),
           dir: Vec.dir(),
           turn_cooldown: float(),

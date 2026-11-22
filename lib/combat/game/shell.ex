@@ -4,7 +4,7 @@ defmodule Combat.Game.Shell do
   game.
   """
 
-  alias Combat.Game.Vec
+  alias Combat.Game.{Vec, State}
 
   @enforce_keys [:id, :owner, :pos, :vel, :ttl]
   defstruct [:id, :owner, :pos, :vel, :ttl]
@@ -16,7 +16,7 @@ defmodule Combat.Game.Shell do
   """
   @type t() :: %__MODULE__{
           id: pos_integer(),
-          owner: :p1 | :p2,
+          owner: State.slot(),
           pos: Vec.t(),
           vel: Vec.t(),
           ttl: float()
