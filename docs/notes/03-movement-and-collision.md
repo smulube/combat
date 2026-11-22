@@ -7,3 +7,7 @@ it applies the inputs and the time tick difference and returns a new State).
 
 This type of data model maps really nicely to piped functions in Elixir (pattern
 I know and have used both in Elixir and Clojure)
+
+## Notes
+
+- Use `put_in` for updating nested fields inside a struct, but for simple cases we can use the "quick" syntax: `%{state | status: :playing}`
