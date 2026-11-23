@@ -38,6 +38,43 @@ steps (22.5° each). We keep that, for three reasons:
   compare in tests.
 - The client can later draw a pre-made sprite per direction instead of rotating images.
 
+### Cooldowns: timers as data
+
+The server never sees key *presses*. It only sees which keys are *held* right now (that's what
+`%Input{}` holds), and it looks at that input once per tick, 30 times a second from guide 05
+onwards. So "the player is holding left" is true on every tick until they let go.
+
+Picture rotation without a cooldown, where every tick with `left` held turns the tank one step:
+
+- **Far too fast.** 30 steps a second is nearly two full turns per second. Even the shortest tap
+  covers several ticks, so aiming at a precise direction becomes almost impossible.
+- **Speed depends on the tick rate.** Run the server at 60 Hz and tanks suddenly turn twice as
+  fast. How the game feels should be a tuning decision, not a side effect of how often the loop
+  runs.
+
+The cooldown fixes both. After a rotation step, the tank stores how many seconds must pass
+before it may turn again (`turn_cooldown`). Each tick subtracts `dt` from it, and the tank may
+only rotate once it reaches `0.0`. Holding a key now gives a steady, deliberate "click, click,
+click" that `@turn_interval` controls, and the rate is measured in seconds, not ticks.
+
+Why a countdown rather than storing the time of the last turn? The core is pure and has no clock.
+It only knows `dt`, the time that has passed since the last tick. A field that counts down by
+`dt` needs no clock, survives being copied around as plain data and is easy to test: build a
+tank with `turn_cooldown: 0.05`, tick it once with `dt = 0.1` and check what happens.
+
+The same pattern turns up twice more: `reload` limits how often a tank can fire, and `spin`
+counts down the spin-out after a hit (both in guide 04). Whenever you think "X can't happen
+again until some time has passed", reach for a field that counts down.
+
+<details><summary>Aside: the cooldown is quantised to ticks</summary>
+
+The cooldown can only be checked once per tick, so at 30 Hz (`dt ≈ 0.033`) a 0.08 s cooldown
+actually runs out on the third tick, giving a turn every 0.1 s. That's fine. It's still
+consistent and still independent of tick-rate accidents, and much finer than the player can
+perceive. If you ever need exact rates, you can carry the leftover time over instead of
+flooring at `0.0`. Nothing in this game needs that.
+</details>
+
 ## Steps
 
 All core modules live under `lib/combat/game/`, and tests under `test/combat/game/`.
@@ -129,7 +166,7 @@ spawns at the left-middle facing east and the right-middle facing west.
 | `id` | (enforced) | `:p1` or `:p2` |
 | `pos` | (enforced) | `{x, y}` **centre** of the tank |
 | `dir` | `0` | Direction index `0..15` |
-| `turn_cooldown` | `0.0` | Seconds until it may rotate another step |
+| `turn_cooldown` | `0.0` | Seconds until it may rotate another step (see [Cooldowns](#cooldowns-timers-as-data)) |
 | `reload` | `0.0` | Seconds until it may fire again |
 | `spin` | `0.0` | Seconds of "spin-out" left after being hit (guide 04) |
 
