@@ -146,4 +146,4 @@ Pick whatever you fancy:
   shows the throttling, and closing one window leads to a forfeit 15 s later.
 - After everyone leaves, the match process disappears within about a minute.
 
-Next: [14 — Deployment (optional)](14-deployment.md)
+Next: [14 — Observability & telemetry](14-observability.md)

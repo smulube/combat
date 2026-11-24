@@ -56,6 +56,13 @@ they touch a wall at an angle. The classic fix:
 3. Otherwise try `{0, dy}` alone. If it's clear, take it.
 4. Otherwise don't move.
 
+Each attempt is **all or nothing**: a blocked move is cancelled, not shortened. Axis separation
+only helps when the move is diagonal, because then one axis can still go through. Driving
+straight at a wall, the tank stops wherever it is when the next full step would overlap, which
+leaves a gap of up to one tick's movement (about 1 unit at 30 Hz). That gap never closes, since
+every later step is blocked too. It's barely visible, so we accept it. Closing it is a stretch
+goal.
+
 ## Steps
 
 ### 1. `Combat.Game.Collision` (`lib/combat/game/collision.ex`)
@@ -249,5 +256,10 @@ The tank has moved and is not inside a wall.
   whole project and catches real bugs.
 - Make tanks collide with each other using a slightly smaller box, so that squeezing past each
   other is forgiving.
+- Close the gap in front of walls. When a move along an axis is blocked, move the tank exactly up
+  to the nearest obstacle instead of not moving at all. Work out the distance from the tank's
+  leading edge to the obstacle's facing edge. Remember that edges which merely touch don't count
+  as overlapping, so a tank flush against a wall is allowed. Test that a tank driven at a wall
+  for many ticks ends up exactly touching it.
 
 Next: [04 — Shells, hits & scoring](04-shells-hits-and-scoring.md)

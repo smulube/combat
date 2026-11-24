@@ -26,7 +26,8 @@ every line yourself.
 | 11 | [Biplanes](docs/11-biplanes.md) | Constant motion, screen wrap, clouds that hide planes |
 | 12 | [Jets](docs/12-jets.md) | Squadrons, several units per side |
 | 13 | [Netcode & polish](docs/13-netcode-and-polish.md) | Interpolation, ping, disconnects, sound, cleanup |
-| 14 | [Deployment (optional)](docs/14-deployment.md) | Releases, hosting, clustering ideas |
+| 14 | [Observability & telemetry](docs/14-observability.md) | `:telemetry` events and spans, metrics in LiveDashboard, structured logs, live process inspection |
+| 15 | [Deployment (optional)](docs/15-deployment.md) | Releases, hosting, clustering ideas |
 
 Work through them in order. Each guide ends with a **Checkpoint**, so you know when it's safe
 to move on.

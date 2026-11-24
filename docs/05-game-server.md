@@ -194,6 +194,7 @@ Watch `p1`'s `x` grow, and see a shell appear. Now try `Process.exit(pid, :kill)
 
 - Add `:telemetry.execute([:combat, :tick], %{duration: native_time}, %{match_id: id})` around the
   tick, then log the duration in a handler. You'll know exactly how much CPU headroom you have.
+  Guide 14 comes back to this properly, with `:telemetry.span/3` and a chart in LiveDashboard.
 - Use `:timer.tc/1` in iex to measure one `Game.tick/2` call. (Expect microseconds.)
 
 Next: [06 — Supervision & Registry](06-supervision-and-registry.md)

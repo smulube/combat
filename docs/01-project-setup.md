@@ -66,8 +66,8 @@ What the flags remove, and why:
 
 We **keep** LiveDashboard (no `--no-dashboard`). It's a browser view of the running BEAM:
 processes, supervision trees, memory and telemetry metrics. You'll use it in guide 06 to watch
-match processes start, crash and restart, and it can chart any telemetry metrics you add (such
-as the tick timing suggested in guide 05's stretch goals). It costs one
+match processes start, crash and restart, and guide 14 uses it to chart your own telemetry
+metrics, such as how long each game tick takes. It costs one
 dependency and a few lines in `router.ex`, and it's only mounted in development.
 
 If it asks whether to overwrite `README.md`, answer **no**. Say **yes** to fetching dependencies.
@@ -84,7 +84,7 @@ Before writing anything, open and read these files. Note in a scratch file what 
   `if Application.compile_env(:combat, :dev_routes)` block that mounts `live_dashboard`. Why is
   it wrapped in that `if`?
 - `lib/combat_web/telemetry.ex`: the metrics LiveDashboard charts. You'll add your own here
-  later.
+  in guide 14.
 - `lib/combat_web/controllers/page_controller.ex` and `page_html/home.html.heex`.
 - `lib/combat_web/components/layouts.ex` (and the `layouts/` folder): the page chrome.
 - `assets/js/app.js`: note that it sets up a LiveView socket. We won't use LiveView for the game,
