@@ -71,7 +71,12 @@ defmodule Combat.GameTest do
       state = Game.start(state)
       state = %{state | inputs: %{p1: %Input{forward: true}, p2: %Input{forward: true}}}
 
-      assert %State{tanks: %{p1: %Tank{pos: {15.0, 50.0}}, p2: %Tank{pos: {145.0, 50.0}}}} =
+      assert %State{
+               tanks: %{
+                 p1: %Tank{pos: {28.0, 45.0}, dir: 0},
+                 p2: %Tank{pos: {132.0, 45.0}, dir: 8}
+               }
+             } =
                Game.tick(state, 0.1)
     end
 
