@@ -56,6 +56,13 @@ they touch a wall at an angle. The classic fix:
 3. Otherwise try `{0, dy}` alone. If it's clear, take it.
 4. Otherwise don't move.
 
+Each attempt is **all or nothing**: a blocked move is cancelled, not shortened. Axis separation
+only helps when the move is diagonal, because then one axis can still go through. Driving
+straight at a wall, the tank stops wherever it is when the next full step would overlap, which
+leaves a gap of up to one tick's movement (about 1 unit at 30 Hz). That gap never closes, since
+every later step is blocked too. It's barely visible, so we accept it. Closing it is a stretch
+goal.
+
 ## Steps
 
 ### 1. `Combat.Game.Collision` (`lib/combat/game/collision.ex`)
@@ -75,11 +82,19 @@ Add `Combat.Game.start(state)`, which sets `status: :playing`.
 ### 3. `Combat.Game.Movement` (`lib/combat/game/movement.ex`)
 
 ```elixir
-@spec move_tank(Tank.t(), Input.t(), float(), [rect]) :: Tank.t()
+@spec move_tank(tank :: Tank.t(), input :: Input.t(), dt :: float(), obstacles :: [rect]) ::
+        Tank.t()
 ```
 
-`obstacles` is the list of rects the tank must not overlap: the arena walls **plus the other
-tank's bounds**.
+The arguments, in order:
+
+- `tank`: the tank being moved.
+- `input`: the buttons that tank's player is holding (`%Input{}`).
+- `dt`: seconds since the last tick, the same `dt` that `tick/2` receives. Cooldowns count down
+  by it, and displacement scales with it.
+- `obstacles`: the list of `%{x, y, w, h}` rects the tank must not overlap. That's the arena
+  walls **plus the other tank's bounds**. `rect` here means the same rect type that `Collision`
+  works with. If you gave it a name in guide 02 (for example `Arena.rect()`), use that.
 
 Behaviour, in order:
 
@@ -92,6 +107,37 @@ Behaviour, in order:
    `direction × speed × dt`.
 4. **Collision:** resolve with the axis-separation algorithm above, using `Tank.bounds/1` on the
    *proposed* tank.
+
+<details><summary>Hint: structuring <code>move_tank/4</code></summary>
+
+Each of the four behaviours above is its own small transformation. Give each one a private
+helper that takes a tank and returns a tank, then make `move_tank/4` a pipeline:
+
+```elixir
+tank
+|> tick_cooldowns(dt)
+|> rotate(input)
+|> translate(input, dt, obstacles)
+```
+
+Collision belongs inside `translate`, because it decides whether the translation happens.
+
+- **Turn the input into a number first.** Both `rotate` and `translate` are easier if you turn
+  two booleans into one value before doing any maths. Pattern-match on a tuple, for example
+  `case {input.left, input.right} do ... end`, to get a turn step of `-1`, `0` or `1`, or a
+  speed factor of `1.0`, `-0.5` or `0.0` from `forward`/`back`. "Holding both does nothing"
+  then becomes a single clause.
+- **Guard clauses for "nothing happens".** `rotate` has two cases where nothing happens:
+  the cooldown is still running, or the turn step is `0`. A function head with a guard
+  (`when cooldown > 0.0`) that returns the tank unchanged is often clearer than a nested `if`.
+- **Stay in floats.** `max(x, 0)` returns the *integer* `0` when it wins. Compare with `0.0`
+  so the field keeps the type its typespec promises.
+- **Update the struct with `%{tank | field: value}`.** Each helper returns the tank with one or
+  two fields changed.
+
+Test each behaviour on its own: a tank with `turn_cooldown: 0.0` and `left: true` should end
+up with `dir` one step anticlockwise, and so on.
+</details>
 
 <details><summary>Hint: a tidy way to write the slide</summary>
 
@@ -210,5 +256,10 @@ The tank has moved and is not inside a wall.
   whole project and catches real bugs.
 - Make tanks collide with each other using a slightly smaller box, so that squeezing past each
   other is forgiving.
+- Close the gap in front of walls. When a move along an axis is blocked, move the tank exactly up
+  to the nearest obstacle instead of not moving at all. Work out the distance from the tank's
+  leading edge to the obstacle's facing edge. Remember that edges which merely touch don't count
+  as overlapping, so a tank flush against a wall is allowed. Test that a tank driven at a wall
+  for many ticks ends up exactly touching it.
 
 Next: [04 — Shells, hits & scoring](04-shells-hits-and-scoring.md)

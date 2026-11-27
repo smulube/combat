@@ -1,4 +1,4 @@
-# 14 — Deployment (optional)
+# 15 — Deployment (optional)
 
 ## Goal
 
@@ -78,7 +78,11 @@ DynamicSupervisor.count_children(Combat.MatchSupervisor)
 :sys.get_state(Combat.Matches.whereis("QXKB"))
 ```
 
-Be careful in here: this is the live system.
+Be careful in here: this is the live system. The inspection tools from guide 14
+(`Process.info/2`, `:sys.get_state/1`) all work here too. Avoid `:sys.trace/2` on a live match.
+
+LiveDashboard is only mounted in development, so you can't see your guide 14 metrics in
+production yet. Stretch goal 5 in guide 14 (a Prometheus reporter) is the usual way to get them.
 
 ## Checkpoint
 
