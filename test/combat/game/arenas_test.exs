@@ -46,22 +46,22 @@ defmodule Combat.Game.ArenasTest do
       arena_2 = Arenas.from_ascii("1#2\n...\n.#.\n")
       assert arena_1 == arena_2
     end
+  end
 
-    describe "open_field/0" do
-      test "builds the open field arena" do
-        arena = Arenas.open_field()
-        assert %Arena{} = arena
-        assert length(arena.walls) == 18
-        assert {_, _, _} = arena.spawns.p1
-        assert {_, _, _} = arena.spawns.p2
-      end
+  describe "open_field/0" do
+    test "builds the open field arena" do
+      arena = Arenas.open_field()
+      assert %Arena{} = arena
+      assert length(arena.walls) == 18
+      assert {_, _, _} = arena.spawns.p1
+      assert {_, _, _} = arena.spawns.p2
     end
+  end
 
-    describe "maze" do
-      test "builds the maze arena" do
-        arena = Arenas.maze()
-        assert 30 = length(arena.walls)
-      end
+  describe "maze" do
+    test "builds the maze arena" do
+      arena = Arenas.maze()
+      assert 30 = length(arena.walls)
     end
   end
 end
