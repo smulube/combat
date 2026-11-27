@@ -1,5 +1,7 @@
 defmodule Combat.GameTest do
   use ExUnit.Case, async: true
+  use ExUnitProperties
+
   alias Combat.Game
   alias Combat.Game.{State, Arenas, Tank, Input, Collision}
   doctest Combat.Game
@@ -164,8 +166,53 @@ defmodule Combat.GameTest do
     end
   end
 
+  describe "invariants" do
+    property "tanks never overlap walls or each other whatever the inputs" do
+      check all(script <- list_of({input_gen(), input_gen(), integer(1..20)}, max_length: 500)) do
+        state =
+          Arenas.maze()
+          |> Game.new()
+          |> Game.start()
+
+        Enum.reduce(script, state, fn {p1_input, p2_input, steps}, game ->
+          states =
+            game
+            |> Game.set_input(:p1, p1_input)
+            |> Game.set_input(:p2, p2_input)
+            |> run_history(steps)
+
+          # assert p1 and p2 never overlap walls or each other
+          Enum.each(states, fn s ->
+            refute Collision.any_overlap?(Tank.bounds(s.tanks.p1), s.arena.walls)
+            refute Collision.any_overlap?(Tank.bounds(s.tanks.p2), s.arena.walls)
+            refute Collision.overlaps?(Tank.bounds(s.tanks.p1), Tank.bounds(s.tanks.p2))
+          end)
+
+          List.last(states)
+        end)
+      end
+    end
+  end
+
   defp run_history(state, ticks, dt \\ 1 / 30),
     do: Enum.scan(1..ticks, state, fn _, s -> Game.tick(s, dt) end)
 
   # defp run(state, ticks, dt \\ 1 / 30), do: run_history(state, ticks, dt) |> List.last()
+
+  # input_gen() is a stream_data generator that returns a new value each time
+  # StreamData asks for a value. Used to create the random movement for the
+  # property test above. Note that the generators below are very naive, 25% of
+  # the time it will return true for both forward and back or both left and
+  # right which won't result in any change in state. StreamData does provide
+  # tools for biasing the generated stream but adding this is a refinement.
+  defp input_gen() do
+    gen all(
+          forward <- boolean(),
+          back <- boolean(),
+          left <- boolean(),
+          right <- boolean()
+        ) do
+      %Input{forward: forward, back: back, left: left, right: right}
+    end
+  end
 end
